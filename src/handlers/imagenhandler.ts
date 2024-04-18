@@ -1,5 +1,6 @@
 import mqtt from "mqtt";
 import bcryp from "bcrypt";
+import axios from "axios";
 
 export default (io:any,socket:any)=>{
     const getImage=async(id:number)=>{
@@ -22,6 +23,10 @@ export default (io:any,socket:any)=>{
           mqttClient.on('message', (topic, message) => {
               let dataString = message.toString()
               const jsonData = JSON.parse(dataString);
+              axios.patch("http://localhost:3003/api/producto",{
+                productId:id,
+                image:jsonData.urlimg
+              }).then((res)=>{console.log(res)}).catch((err)=>{console.log(err)})
               
               io.of("/camara").to(id).emit("getimage:get",jsonData)
               
@@ -30,6 +35,8 @@ export default (io:any,socket:any)=>{
           
           
     }
+
+    
 
     socket.on("getimage:send",getImage)
     // socket.on("joinRoom",(idRoom:any,usuario:any) => {
